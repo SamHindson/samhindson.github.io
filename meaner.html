@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<head>
+<script type="text/javascript">
+function Node(x, y) {
+	this.x = x;
+	this.y = y;
+};
+Node.prototype.getX = function() {
+	return this.x;
+};
+Node.prototype.getY = function() {
+	return this.y;
+};
+Node.prototype.setX = function(xxx) {
+	this.x = xxx;
+};
+Node.prototype.setY = function(yyy) {
+	this.y = yyy;
+};
+Node.prototype.distance = function(n) {
+	return Math.sqrt(Math.pow(n.getX() - this.x, 2) + Math.pow(n.getY() - this.y, 2));
+};
+window.onload = function() {
+	console.log("Woof");
+	var canvas = document.getElementById("kansas");
+	var g = canvas.getContext("2d");
+	var elapsed = 0;
+	var nodecount = 4;
+	var nodes = [];
+	var showingOff = false;
+	var showingOffTimer = 0;
+	nodes.push(new Node(100, canvas.height / 2));
+	for(var k = 0; k < nodecount - 2; k++) {
+		nodes.push(new Node(Math.random() * canvas.width, Math.random() * canvas.height));
+	}
+	nodes.push(new Node(canvas.width - 100, canvas.height / 2));
+	var currentFixIndex = 1;
+	var background = "#3C91E6";
+	setInterval(function() {
+		g.fillStyle = background;
+		g.fillRect(0, 0, canvas.width, canvas.height);
+		g.lineWidth = 5;
+		if(!showingOff) {
+			elapsed++;
+			nodes[currentFixIndex].setX((nodes[currentFixIndex-1].getX() + nodes[currentFixIndex+1].getX()) / 2);
+			nodes[currentFixIndex].setY((nodes[currentFixIndex-1].getY() + nodes[currentFixIndex+1].getY()) / 2);
+			currentFixIndex++;
+		} else {
+			showingOffTimer += 0.032;
+			currentFixIndex = -1;
+			if(showingOffTimer > 2 && nodecount < 25) {
+				reset();
+				showingOffTimer = 0;
+				showingOff = false;
+			}
+		}
+		if(currentFixIndex > nodes.length - 2) {
+			currentFixIndex = 1;
+		}
+		if(showingOff) {
+			g.strokeStyle=g.fillStyle="#FDCA40";
+		} else {
+			g.strokeStyle=g.fillStyle="#224870";
+		}
+		for(var v = 0; v < nodes.length - 1; v++) {
+			g.beginPath();
+			g.moveTo(nodes[v].getX(), nodes[v].getY());
+			g.lineTo(nodes[v+1].getX(), nodes[v+1].getY());
+			g.stroke();
+		}
+		for(var v = 0; v < nodes.length; v++) {
+			if(v == currentFixIndex) {
+				g.fillStyle = g.strokeStyle = "#44CFCBFF";
+			} else {
+				g.fillStyle = g.strokeStyle = "#224870FF";
+			}
+			g.beginPath();
+			g.arc(nodes[v].getX(), nodes[v].getY(), v==currentFixIndex ? 20:10, 0, Math.PI * 2, false);
+			g.fill();
+		}
+		var alength = 0;
+		for(var v = 0; v < nodes.length - 1; v++) {
+			alength += nodes[v].distance(nodes[v+1]);
+		}
+		alength /= (nodecount - 1);
+		var target = ((canvas.width - 200)) / (nodecount - 1);
+		g.font = "bold 20px Helvetica";
+		g.fillStyle = "#EEEEEE";
+		var txt = "n = " + nodecount + ", m = " + elapsed;   
+		g.fillText(txt, canvas.width / 2 - g.measureText(txt).width / 2, canvas.height * 0.45);
+
+		if(showingOff) {
+			g.fillStyle = "#EEEEEE";
+			g.font = "bold 30px Helvetica";
+			txt = "Achieved a relatively straight line in";
+			g.fillText(txt, canvas.width / 2 - g.measureText(txt).width / 2, canvas.height * 0.62);
+			g.fillStyle = "#F79824";
+			g.font = "bold italic 50px Helvetica";
+			txt = "" + elapsed + " calculations";
+			g.fillText(txt, canvas.width / 2 - g.measureText(txt).width / 2, canvas.height * 0.62 + 50);
+
+			if(nodecount >= 25) {
+				g.font = "italic bold 15px Helvetica";
+				g.fillStyle = "#DFD6A7";
+				txt = "[the program has stopped at n = 25 for fear of destroying your RAM]";
+				g.fillText(txt, canvas.width / 2 - g.measureText(txt).width / 2, canvas.height * 0.8);
+			}
+		}
+		if(Math.abs(alength - target) <= 0.005) {
+			showingOff = true;
+		}
+	}, 32);
+	reset = function() {
+			nodecount++;
+			elapsed = 0;
+			nodes = [];
+			nodes.push(new Node(100, canvas.height / 2));
+			for(var k = 0; k < nodecount - 2; k++) {
+				nodes.push(new Node(Math.random() * canvas.width, Math.random() * canvas.height));
+			}
+			nodes.push(new Node(canvas.width - 100, canvas.height / 2));
+			currentFixIndex = 1;
+	};
+};
+</script>
+</head>
+<body>
+<canvas id="kansas" width="800" height="400">Get something else</canvas>
+</body>
+</html>
