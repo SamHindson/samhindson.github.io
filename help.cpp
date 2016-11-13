@@ -1,3 +1,4 @@
+//	Don't know if I still need some of these. I'll leave them in just in case.
 #include <stdio.h>
 #include <iostream>
 #include <math.h>
@@ -5,6 +6,7 @@
 #include <stdlib.h>
 #include <fstream>
 
+// 	Slapdash OOP in C++, lol
 class Node {
 public:
 	Node();
@@ -32,6 +34,7 @@ double averageLength = 0;
 double target;
 std::vector<Node> nodes;
 
+//	Does everything as though we were playing in a 1000x1000 canvas
 void reset() {
 	nodes.clear();
 	target = 1000 / (nodeCount - 1);
@@ -52,6 +55,7 @@ int main() {
 	//	How far we want to run the calculation
 	for(int u = 0; u < 500; u++) {
 		double mean = 0;
+		//	The ideal average length for an ordered set of paths
 		target = 1000 / (nodeCount - 1);
 		int calcz = 10;
 		//	How many times we want to do the same simulation (accuracy++!)
@@ -83,15 +87,15 @@ int main() {
 			}
 			reset();
 		}
+		//	Means it out
 		mean /= calcz;
+		//	Lets the user know what's going on
 		std::cout<<"Finished "<<u<<std::endl;
 		foil << u << "\t\t" << mean << "\n";
 		mean = 0;
 		nodeCount++;
 		reset();
 	}
-
 	foil.close();
-
 	return 0;
 }
